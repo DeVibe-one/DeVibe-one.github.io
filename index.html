@@ -3,395 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeVibe-one // NERV TACTICAL SYSTEM</title>
+    <title>DeVibe-one // PROJECT ADVANCED AYANAMI</title>
+    <!-- 新剧场版现代风排版: Rajdhani 用于精密HUD数字, Noto Sans用于无机质正文 -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+JP:wght@300;700&family=Noto+Serif+JP:wght@200;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@900&family=Share+Tech+Mono&display=swap');
-
         :root {
-            /* Strictly NERV Color Palette */
-            --eva-black: #050505;
-            --eva-orange: #FF6600;
-            --eva-red: #E60000;
-            --eva-green: #00FF00;
-            --eva-white: #F4F4F4;
-            --grid-color: rgba(255, 102, 0, 0.15);
+            /* 绫波丽 新剧场版 专用色彩系统 */
+            --rei-pale-blue: #e0f2fe;     /* 月光白/护士蓝 */
+            --rei-cyan: #00d2ff;          /* LCL/同步回路蓝 */
+            --rei-eye-red: #ff1033;       /* 绝对焦点：丽之眼红 */
+            --rei-plug-suit: #ffffff;
+            
+            --glass-bg: rgba(5, 13, 25, 0.4);
+            --glass-border: rgba(0, 210, 255, 0.3);
+            
+            --neon-glow: 0 0 10px rgba(0, 210, 255, 0.5);
+            --neon-glow-red: 0 0 15px rgba(255, 16, 51, 0.7);
+            
+            --hud-dark: #020611;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            background-color: var(--eva-black);
-            color: var(--eva-orange);
-            font-family: 'Share Tech Mono', monospace;
-            overflow-x: hidden;
-            text-transform: uppercase;
-            /* Hardcore Tactical Grid */
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            background-color: var(--hud-dark);
+            color: var(--rei-pale-blue);
+            font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+            overflow: hidden; height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* 背景：微小的神经元六边形节点和LCL气泡 (模拟全息微小尘埃) */
+        .hologram-grid {
+            position: absolute; inset: 0; z-index: 0;
             background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 30px 30px;
+                radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            animation: breathe 8s ease-in-out infinite alternate;
+        }
+        @keyframes breathe { 0% { opacity: 0.6; } 100% { opacity: 1; transform: scale(1.02); } }
+
+        /* ---------- 左上角 HUD ---------- */
+        .hud-top-left { position: absolute; top: 30px; left: 40px; z-index: 10; border-left: 2px solid var(--rei-cyan); padding-left: 15px;}
+        .hud-top-left h1 { font-family: 'Noto Serif JP'; font-weight: 200; font-size: 2.2rem; letter-spacing: 5px; color: var(--rei-plug-suit); }
+        .hud-top-left h1 span { font-weight: 700; color: var(--rei-cyan); font-family: 'Rajdhani';}
+        .hud-sub { font-size: 0.9rem; letter-spacing: 3px; color: var(--rei-cyan); opacity: 0.7; font-weight: 600; margin-top: 5px;}
+
+        /* ---------- 全息核心界面圈 ---------- */
+        .dashboard-container {
+            width: 90vw; height: 85vh;
+            display: grid; grid-template-columns: 350px 1fr 300px; gap: 40px;
+            position: relative; z-index: 5;
         }
 
-        ::selection { background: var(--eva-orange); color: var(--eva-black); }
-
-        .serif-ja { font-family: 'Noto Serif JP', serif; font-weight: 900; }
-
-        /* CRT Scanlines */
-        .scanlines {
-            position: fixed; inset: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
-            background-size: 100% 4px;
-            z-index: 9999; pointer-events: none; opacity: 0.7;
+        /* 丽党特供专属卡片 (玻璃态、透明切割) */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-top: 3px solid var(--rei-cyan);
+            position: relative; padding: 30px; display: flex; flex-direction: column;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            box-shadow: inset 0 0 40px rgba(0, 210, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+        .glass-panel::after {
+            content: ''; position: absolute; right: 0; bottom: 0; width: 20px; height: 20px;
+            background: rgba(0,210,255,0.2);
+        }
+        .glass-panel:hover {
+            background: rgba(10, 30, 60, 0.5); border-top-color: var(--rei-eye-red); box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        /* ---------------- BOOT SEQUENCE ---------------- */
-        #boot-screen {
-            position: fixed; inset: 0; background: var(--eva-black); z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        /* ---------- 左面板：代号绫波 / 代码部署 ---------- */
+        .profile-title {
+            font-size: 1rem; color: var(--rei-eye-red); font-weight: 700; letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 16, 51, 0.3); padding-bottom: 5px; margin-bottom: 20px;
+        }
+        .rei-id { font-family: 'Rajdhani'; font-size: 5rem; font-weight: 300; line-height: 0.8; color: var(--rei-plug-suit); opacity: 0.8;}
+        .rei-type { font-size: 1.1rem; letter-spacing: 1px; color: var(--rei-cyan); margin-bottom: 30px; font-weight: 600; text-transform: uppercase;}
+
+        .action-list { display: flex; flex-direction: column; gap: 10px; }
+        .action-item {
+            background: rgba(255,255,255,0.02); border-left: 2px solid transparent;
+            padding: 12px 15px; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .action-item:hover { background: rgba(0, 210, 255, 0.08); border-left-color: var(--rei-cyan); padding-left: 20px; color: var(--rei-plug-suit); }
+        .action-item.active { background: rgba(255, 16, 51, 0.08); border-left-color: var(--rei-eye-red); color: var(--rei-eye-red); font-weight: bold;}
+        .action-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid currentColor;}
+
+        /* ---------- 中央大面板：新剧场版核心视觉 (同心圆阵列) ---------- */
+        .center-hub { display: flex; justify-content: center; align-items: center; position: relative;}
+        
+        .hud-circle-wrap { width: 450px; height: 450px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .hud-circle-wrap svg { position: absolute; width: 100%; height: 100%; top:0; left:0; }
+        
+        .circle-inner { stroke: var(--rei-cyan); fill: none; stroke-width: 1px; stroke-dasharray: 4 4; opacity: 0.4; transform-origin: 50% 50%; animation: spinRight 30s linear infinite;}
+        .circle-mid { stroke: var(--rei-eye-red); fill: none; stroke-width: 1.5px; stroke-dasharray: 80 150 10 30; opacity: 0.7; transform-origin: 50% 50%; animation: spinLeft 20s ease-in-out infinite alternate;}
+        .circle-outer { stroke: var(--rei-cyan); fill: none; stroke-width: 3px; stroke-dasharray: 200 40 40 40; opacity: 0.3; transform-origin: 50% 50%; animation: spinRight 15s linear infinite;}
+        .circle-radar { stroke: rgba(0,210,255,0.1); fill: rgba(0, 210, 255, 0.02); stroke-width: 1px;}
+
+        /* 中央数据信息 */
+        .center-data { text-align: center; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .center-data h2 { font-size: 2.5rem; letter-spacing: 5px; color: var(--rei-plug-suit); margin:0; text-shadow: var(--neon-glow); font-family: 'Rajdhani';}
+        .center-data p { font-size: 1rem; color: var(--rei-pale-blue); letter-spacing: 2px; font-weight: 300;}
+        .btn-sync { 
+            margin-top: 15px; background: transparent; border: 1px solid var(--rei-cyan); 
+            color: var(--rei-cyan); padding: 8px 30px; font-family: 'Rajdhani'; font-size: 1.1rem;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .btn-sync::before {
+            content: ''; position: absolute; top:0; left:-100%; width: 100%; height:100%;
+            background: var(--rei-cyan); opacity: 0.2; transition: 0.3s;
+        }
+        .btn-sync:hover { background: rgba(0, 210, 255, 0.1); border-color: var(--rei-plug-suit); color: var(--rei-plug-suit); box-shadow: var(--neon-glow); }
+        .btn-sync:hover::before { left: 100%; }
+
+        @keyframes spinRight { to { transform: rotate(360deg); } }
+        @keyframes spinLeft { to { transform: rotate(-360deg); } }
+
+        /* ---------- 右侧面板：情绪回路与核心微控 ---------- */
+        .right-data { font-family: 'Noto Sans JP'; }
+        
+        .stat-group { margin-bottom: 25px;}
+        .stat-label { font-size: 0.75rem; letter-spacing: 1px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between;}
+        .stat-label span.err { color: var(--rei-eye-red); animation: pulseText 2s infinite; font-weight:bold;}
+        .stat-bar-bg { width: 100%; height: 2px; background: rgba(0,210,255,0.1); position: relative; margin-bottom: 3px; }
+        .stat-bar-fill { position: absolute; left: 0; top: -1px; height: 4px; background: var(--rei-cyan); box-shadow: var(--neon-glow); }
+        .fill-red { background: var(--rei-eye-red); box-shadow: var(--neon-glow-red);}
+
+        .emotion-chart { width: 100%; height: 60px; margin-top: 20px; }
+        
+        /* 绫波经典台词 */
+        .rei-quote {
+            position: absolute; bottom: 30px; left: 30px; 
+            font-family: 'Noto Serif JP'; font-size: 1rem; color: rgba(255,255,255,0.5); font-weight: 200;
+            border-left: 2px solid var(--rei-cyan); padding-left: 15px;
+            writing-mode: vertical-rl; text-orientation: sideways; height: max-content;
         }
         
-        .magi-loading { display: flex; gap: 20px; z-index: 2; }
-        .magi-hex {
-            width: 140px; height: 161px; /* Perfect Hexagon */
-            background: transparent; border: 4px solid var(--eva-orange);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: var(--eva-orange); font-size: 1.2rem; font-weight: bold; transition: all 0.1s;
+        .quote-en { writing-mode: horizontal-tb; position: absolute; bottom: 20px; right: 40px; font-size: 0.8rem; letter-spacing: 2px; color: rgba(0,210,255,0.4); }
+
+        @keyframes pulseText { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        /* SVG路径波动动画 (情绪图表用) */
+        .line-wave {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: drawWave 10s linear infinite forwards;
         }
-        .magi-hex.approved { background: var(--eva-orange); color: var(--eva-black); }
+        @keyframes drawWave { to { stroke-dashoffset: 0; } }
 
-        .emergency-layer {
-            position: absolute; inset: 0; background: var(--eva-red); color: var(--eva-black);
-            display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; z-index: 3;
-        }
-        .emergency-layer.active { display: flex; animation: flashRed 0.4s infinite alternate; }
-        .emergency-layer h1 { font-size: 12vw; margin: 0; line-height: 0.8; letter-spacing: -2px; }
-        .emergency-layer h2 { font-size: 8vw; margin: 0; border-top: 10px solid var(--eva-black); padding-top: 10px; }
-        
-        @keyframes flashRed { from { background: var(--eva-red); color: var(--eva-black); } to { background: var(--eva-black); color: var(--eva-red); } }
-        @keyframes dissolve { to { opacity: 0; visibility: hidden; } }
-
-        /* ---------------- TOP WARNING STRIP ---------------- */
-        .marquee-container {
-            background: var(--eva-red); color: var(--eva-black); font-weight: bold; font-size: 1.1rem;
-            padding: 4px 0; border-bottom: 2px solid var(--eva-white); overflow: hidden; white-space: nowrap;
-        }
-        .marquee-text { display: inline-block; animation: marquee 15s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-
-        /* ---------------- MAIN LAYOUT ---------------- */
-        .layout-grid {
-            display: grid; grid-template-columns: 100px 1fr 420px; gap: 40px;
-            max-width: 1600px; margin: 30px auto; padding: 0 20px; position: relative;
-        }
-
-        /* Tactical Brackets (The classic EVA UI corners) */
-        .tactical-box {
-            border: 2px solid var(--eva-orange); padding: 30px; position: relative; background: rgba(0,0,0,0.8);
-        }
-        .tactical-box::before, .tactical-box::after {
-            content: ''; position: absolute; width: 20px; height: 20px; border: 5px solid var(--eva-white);
-        }
-        .tactical-box::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .tactical-box::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
-        /* LEFT: Vertical Japanese Title */
-        .vertical-title {
-            writing-mode: vertical-rl; text-orientation: upright;
-            font-size: 3.5rem; color: var(--eva-red); line-height: 1; letter-spacing: -5px;
-            text-shadow: 2px 2px 0 var(--eva-white);
-        }
-
-        /* CENTER: Core Panel */
-        .watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 15vw; color: rgba(230, 0, 0, 0.04); pointer-events: none; z-index: 0; line-height: 0.8;
-        }
-
-        .header-bar { display: flex; justify-content: space-between; border-bottom: 2px solid var(--eva-orange); padding-bottom: 10px; margin-bottom: 20px; }
-        .header-bar h2 { margin: 0; font-size: 2.5rem; color: var(--eva-white); letter-spacing: 2px; }
-        .sys-badge { background: var(--eva-red); color: var(--eva-white); padding: 2px 10px; font-weight: bold; font-size: 1rem; align-self: flex-start; }
-
-        .desc-text {
-            font-size: 1.1rem; line-height: 2; color: var(--eva-white);
-            border-left: 5px solid var(--eva-orange); padding-left: 20px; margin-bottom: 40px;
-            background: rgba(255, 102, 0, 0.1); padding: 15px 15px 15px 20px;
-        }
-
-        /* Repo Targets */
-        .repo-title { color: var(--eva-white); border-bottom: 1px solid var(--eva-orange); margin-bottom: 15px; font-size: 1.2rem; }
-        .repo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; z-index: 2; }
-        
-        .repo-card {
-            border: 1px solid var(--eva-orange); padding: 15px; text-decoration: none; color: inherit;
-            background: var(--eva-black); transition: 0.1s; position: relative;
-            /* Cut corners */
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-        }
-        .repo-card:hover { background: var(--eva-orange); color: var(--eva-black); cursor: pointer; }
-        .repo-card:hover .target-badge { border-color: var(--eva-black); color: var(--eva-black); }
-        .repo-card:hover::after { content: 'TARGET LOCK'; position: absolute; top: 5px; right: 10px; font-size: 0.8rem; font-weight: bold; }
-        
-        .target-badge { display: inline-block; border: 1px solid var(--eva-orange); padding: 2px 6px; font-size: 0.8rem; margin-bottom: 8px; color: var(--eva-orange); }
-        .target-badge.danger { color: var(--eva-red); border-color: var(--eva-red); }
-        .repo-card h4 { margin: 0 0 5px 0; font-size: 1.3rem; }
-        .repo-card p { margin: 0; font-size: 0.9rem; font-family: "Noto Serif JP", serif; }
-
-        /* Tactical Terminal */
-        .terminal-box {
-            margin-top: 40px; background: rgba(0,0,0,0.9); border: 2px solid var(--eva-orange);
-            padding: 15px; height: 160px; overflow: hidden; position: relative; z-index: 2;
-        }
-        .terminal-box::before { content: 'MAGI SYSTEM CONSOLE'; display: block; background: var(--eva-orange); color: var(--eva-black); padding: 2px 10px; font-size: 0.9rem; font-weight: bold; margin: -15px -15px 10px -15px; }
-        #log-output p { margin: 4px 0; font-size: 0.95rem; }
-        #log-output p::before { content: '>'; margin-right: 10px; }
-        #log-output p.err { color: var(--eva-red); font-weight: bold; }
-
-        /* RIGHT: Rei Panel */
-        .rei-panel { border-color: var(--eva-white); background: rgba(255,255,255,0.02); }
-        .rei-panel::before, .rei-panel::after { border-color: var(--eva-red); }
-        
-        .rei-header { border-bottom: 4px solid var(--eva-red); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .rei-header h2 { margin: 0; color: var(--eva-white); font-size: 2.2rem; }
-        
-        .quote-box {
-            border-left: 4px solid var(--eva-white); padding-left: 15px; margin-bottom: 30px;
-            color: var(--eva-white); font-size: 1.1rem; line-height: 1.6;
-        }
-        .quote-box span { display: block; color: var(--eva-orange); font-family: 'Share Tech Mono'; font-size: 0.8rem; margin-top: 5px; }
-
-        /* Segmented Data Bars */
-        .data-row { margin-bottom: 15px; }
-        .data-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; color: var(--eva-white); }
-        .data-label .val { color: var(--eva-green); font-weight: bold; }
-        .data-label .val.warn { color: var(--eva-red); }
-        
-        .data-bar { display: flex; gap: 3px; height: 18px; border: 1px solid var(--eva-orange); padding: 2px; }
-        .block { flex: 1; background: rgba(255, 102, 0, 0.2); }
-        .block.filled { background: var(--eva-orange); }
-        .block.filled.danger { background: var(--eva-red); }
-        .block.filled.safe { background: var(--eva-green); }
-
-        /* Dummy System Hex Grid */
-        .dummy-title { border-top: 1px dashed var(--eva-orange); padding-top: 15px; margin-top: 20px; font-size: 1rem; color: var(--eva-white); }
-        .dummy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .dummy-node { border: 1px solid var(--eva-orange); text-align: center; padding: 6px 0; font-size: 0.8rem; }
-        .dummy-node.active { background: var(--eva-orange); color: var(--eva-black); font-weight: bold; }
-        .dummy-node.dead { background: var(--eva-red); color: var(--eva-black); border-color: var(--eva-red); text-decoration: line-through; }
-
-        /* Sharp Waveform */
-        .waveform-box { margin-top: 30px; border: 1px solid var(--eva-red); padding: 10px; background: rgba(230,0,0,0.1); }
-        .waveform-box svg { width: 100%; height: 40px; }
-        .wave-line { stroke-dasharray: 500; stroke-dashoffset: 500; animation: waveAnim 3s linear infinite; }
-        @keyframes waveAnim { to { stroke-dashoffset: 0; } }
-
-        @media (max-width: 1200px) {
-            .layout-grid { grid-template-columns: 1fr; }
-            .vertical-title { writing-mode: horizontal-tb; text-align: center; border-bottom: 4px solid var(--eva-red); padding-bottom: 10px; }
-            .repo-grid { grid-template-columns: 1fr; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="scanlines"></div>
+    <div class="hologram-grid"></div>
 
-    <!-- BOOT SEQUENCE -->
-    <div id="boot-screen">
-        <div style="color: var(--eva-orange); margin-bottom: 40px; font-size: 1.5rem;">[ MAGI SYSTEM CONSENSUS ]</div>
-        <div class="magi-loading">
-            <div class="magi-hex" id="magi-1">MELCHIOR<br>1</div>
-            <div class="magi-hex" id="magi-2">BALTHASAR<br>2</div>
-            <div class="magi-hex" id="magi-3">CASPER<br>3</div>
-        </div>
-        <div class="emergency-layer" id="emergency">
-            <h1>EMERGENCY</h1>
-            <h2 class="serif-ja">緊急事態</h2>
-        </div>
+    <!-- 左上 HUD Title -->
+    <div class="hud-top-left">
+        <h1>PROJECT <span>DEVIBE-ONE</span></h1>
+        <div class="hud-sub">TACTICAL A.T. FIELD INTEGRATION // ADVANCED AYANAMI TYPE</div>
     </div>
 
-    <!-- WARNING STRIP -->
-    <div class="marquee-container">
-        <div class="marquee-text">
-            CAUTION // PATTERN BLUE DETECTED // INITIATING EVANGELION DEPLOYMENT ARCHITECTURE // ALL PERSONNEL PREPARE FOR SYNCHRONIZATION // CAUTION // PATTERN BLUE DETECTED // 
-        </div>
-    </div>
-
-    <!-- MAIN DASHBOARD -->
-    <div class="layout-grid">
+    <div class="dashboard-container">
         
-        <!-- LEFT: Vertical Title -->
-        <div class="vertical-title serif-ja">汎用オープンソース<br>決戦開発局</div>
-
-        <!-- CENTER: Core Panel -->
-        <div class="tactical-box">
-            <div class="watermark serif-ja">極秘</div>
-
-            <div class="header-bar">
-                <h2>DEVIBE-ONE</h2>
-                <div class="sys-badge">CLASSIFIED // LEVEL A</div>
-            </div>
+        <!-- 左侧: ID及子模块访问 (半透明玻璃卡片) -->
+        <div class="glass-panel">
+            <div class="profile-title">CORE.IDENTITY</div>
+            <div class="rei-id">UNIT 00</div>
+            <div class="rei-type">FIRST CHILDREN <span style="font-weight: 300; opacity: 0.5;">// AYANAMI</span></div>
             
-            <div class="desc-text serif-ja">
-                当機関は「サード・インパクト」以後の新世界における基盤コードの再構築を目的とする。<br>
-                全てのリポジトリへのアクセス及びデプロイ権限は、MAGIシステムの合議制により承認される。<br>
-                <span style="color: var(--eva-orange); font-size: 0.9rem; font-family: 'Share Tech Mono'; margin-top: 10px; display: block;">
-                    > ALL CODES ARE GOVERNED BY THE INSTRUMENTALITY PROJECT.
-                </span>
-            </div>
+            <p style="font-size: 0.8rem; margin-bottom: 25px; color: rgba(255,255,255,0.6); line-height: 1.8;">
+                “我的命运只有执行预设。但这里的Repository，赋予了我建立连结的意义。”<br>
+            </p>
 
-            <div class="repo-title">TARGET REPOSITORIES</div>
-            <div class="repo-grid">
-                <a href="https://github.com/DeVibe-one" class="repo-card">
-                    <span class="target-badge danger">TARGET-01 // CORE</span>
-                    <h4>DeVibe-Core</h4>
-                    <p>A.T.フィールド生成コア。高次元データ同期。覚醒の危険性あり。</p>
+            <div class="action-list">
+                <a href="https://github.com/DeVibe-one" style="text-decoration:none; color:inherit;">
+                    <div class="action-item">
+                        <span>A.T. Field (Core.repo)</span> <div class="action-icon" style="background:var(--rei-cyan)"></div>
+                    </div>
                 </a>
-                <a href="https://github.com/DeVibe-one" class="repo-card">
-                    <span class="target-badge">TARGET-00 // DUMMY</span>
-                    <h4>Rei-Dummy-Sys</h4>
-                    <p>自動化CI/CDダミープラグ。感情を持たない24時間テストビルド。</p>
+                <a href="https://github.com/DeVibe-one" style="text-decoration:none; color:inherit;">
+                    <div class="action-item">
+                        <span>Dummy CI/CD pipeline</span> <div class="action-icon"></div>
+                    </div>
                 </a>
-                <a href="https://github.com/DeVibe-one" class="repo-card">
-                    <span class="target-badge">STORAGE // LCL</span>
-                    <h4>LCL-DataLake</h4>
-                    <p>分散型LCLデータレイク。全ユーザーのセッションを海の中で同期。</p>
+                <a href="https://github.com/DeVibe-one" style="text-decoration:none; color:inherit;">
+                    <div class="action-item">
+                        <span>LCL Datalake Archive</span> <div class="action-icon"></div>
+                    </div>
                 </a>
-                <a href="https://github.com/DeVibe-one" class="repo-card">
-                    <span class="target-badge">SYSTEM // MAGI</span>
-                    <h4>MAGI-Consensus</h4>
-                    <p>3ノード合意形成アルゴリズム。PRの生死を判定する中枢。</p>
+                <a href="https://github.com/DeVibe-one" style="text-decoration:none; color:inherit;">
+                    <div class="action-item active">
+                        <span>Mark.09 Auto-Awaken</span> <div class="action-icon" style="background:var(--rei-eye-red); border-color:var(--rei-eye-red);"></div>
+                    </div>
                 </a>
             </div>
 
-            <div class="terminal-box">
-                <div id="log-output"></div>
+            <!-- 小小的HUD条带装点底部 -->
+            <div style="margin-top:auto; font-size:0.7rem; color:var(--rei-cyan); display:flex; gap:10px; border-top:1px solid rgba(0,210,255,0.2); padding-top:10px;">
+                <span>SYNC: STABLE</span>
+                <span>PATTERN: BLUE</span>
+                <span>SOUL: CONFIRMED</span>
             </div>
         </div>
 
-        <!-- RIGHT: Rei Panel -->
-        <div class="tactical-box rei-panel">
-            <div class="rei-header">
-                <h2 class="serif-ja">綾波 レイ</h2>
-                <span style="color: var(--eva-red); font-weight: bold;">FIRST CHILD</span>
-            </div>
+        <!-- 中间大面板: 同心圆阵列 与 数据下行 -->
+        <div class="center-hub">
+            <div class="hud-circle-wrap">
+                <!-- SVG 构建复杂的全息高阶表盘 (模仿新剧场版界面的纤细曲线) -->
+                <svg viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="95" class="circle-radar" />
+                    <circle cx="100" cy="100" r="90" class="circle-outer" />
+                    <circle cx="100" cy="100" r="75" class="circle-inner" />
+                    <!-- 危险眼球红圈 / 同步异常区 -->
+                    <circle cx="100" cy="100" r="55" class="circle-mid" />
+                    <!-- 中间小标定框 -->
+                    <rect x="98" y="4" width="4" height="6" fill="#00d2ff"/>
+                    <rect x="98" y="190" width="4" height="6" fill="#00d2ff"/>
+                    <rect x="4" y="98" width="6" height="4" fill="#00d2ff"/>
+                    <rect x="190" y="98" width="6" height="4" fill="#00d2ff"/>
+                    
+                    <!-- 背景三角构成 (体现剧场版设计几何化倾向) -->
+                    <polygon points="100,20 170,140 30,140" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+                    <polygon points="100,180 30,60 170,60" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+                </svg>
 
-            <div class="quote-box serif-ja">
-                「サーバーは落ちないわ。私が守るもの。」
-                <span>INTERCEPT // "The server won't crash. I will protect it."</span>
-            </div>
-            <div class="quote-box serif-ja">
-                「コードを書くの... それが私の絆だから。」
-                <span>INTERCEPT // "Writing code... because that is my bond."</span>
-            </div>
-
-            <div class="data-row" style="margin-top: 30px;">
-                <div class="data-label"><span>PILOT SYNC RATIO</span> <span class="val warn">41.3%</span></div>
-                <div class="data-bar" id="sync-bar">
-                    <!-- Blocks injected via JS -->
+                <div class="center-data">
+                    <p style="font-family:'Noto Sans JP';">SYNCHRONIZATION RATIO</p>
+                    <h2 id="main-sync-value">99.20<span style="font-size:1.2rem; color:var(--rei-cyan);">%</span></h2>
+                    <p>PLUG DEPTH <span style="color:var(--rei-eye-red)">+ 35</span></p>
+                    <button class="btn-sync" onclick="triggerImpact()">INITIATE LINK</button>
                 </div>
             </div>
-            <div class="data-row">
-                <div class="data-label"><span>LCL PURITY</span> <span class="val">98.5%</span></div>
-                <div class="data-bar" id="lcl-bar">
-                    <!-- Blocks injected via JS -->
+        </div>
+
+        <!-- 右面板: 数据监视器 -->
+        <div class="glass-panel right-data">
+            <div class="profile-title" style="border-bottom-color: rgba(0, 210, 255, 0.3); color: var(--rei-cyan);">MONITOR.LCL</div>
+            
+            <div class="stat-group" style="margin-top:20px;">
+                <div class="stat-label">
+                    <span>Soul Resonance //</span>
+                    <span id="txt-reso">High</span>
                 </div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 85%;"></div></div>
             </div>
 
-            <div class="dummy-title">DUMMY PLUG SYSTEM // CLONE STATUS</div>
-            <div class="dummy-grid">
-                <div class="dummy-node active">REI_01</div>
-                <div class="dummy-node dead">REI_02</div>
-                <div class="dummy-node active">REI_03</div>
-                <div class="dummy-node">REI_04</div>
-                <div class="dummy-node">REI_05</div>
-                <div class="dummy-node">REI_06</div>
-                <div class="dummy-node">REI_07</div>
-                <div class="dummy-node">REI_08</div>
+            <div class="stat-group">
+                <div class="stat-label">
+                    <span>LCL Purity //</span>
+                    <span id="txt-lcl" style="color:var(--rei-cyan)">Optimum</span>
+                </div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 98%;"></div></div>
             </div>
 
-            <div class="waveform-box">
-                <div style="font-size: 0.8rem; color: var(--eva-red); margin-bottom: 5px;">PATTERN BLUE // SOUL: UNKNOWN</div>
-                <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-                    <!-- Sharp jagged waveform -->
-                    <polyline points="0,20 20,20 25,5 35,35 45,20 60,20 65,10 75,30 85,20 120,20 125,5 130,35 140,20 200,20" fill="none" stroke="var(--eva-red)" stroke-width="2" class="wave-line"/>
+            <div class="stat-group">
+                <div class="stat-label">
+                    <span>Emotional Pattern //</span>
+                    <span class="err" id="txt-emo">UNKNOWN_NULL</span>
+                </div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill fill-red" style="width: 42%;" id="emo-bar"></div></div>
+                <!-- 迷人心绪的心跳/脑波折线 -->
+                <svg class="emotion-chart" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <path class="line-wave" fill="none" stroke="rgba(255,16,51,0.6)" stroke-width="1.5" d="M0 10 Q 5 10 10 5 T 20 15 T 30 10 T 40 2 T 50 18 T 60 10 T 70 8 T 80 12 T 90 10 L100 10"/>
                 </svg>
             </div>
+            
+            <div style="flex-grow:1;"></div>
+
+            <!-- 底层CLI流信息框 (微缩且极客风) -->
+            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(0,210,255,0.1); border-left:3px solid var(--rei-cyan); padding: 10px; height:80px; overflow:hidden; font-family:'Rajdhani'; font-size:0.75rem;">
+                <div id="cli-output"></div>
+            </div>
         </div>
     </div>
 
+    <!-- 侧边的孤独台词 (只有真丽党才懂的心塞和优美) -->
+    <div class="rei-quote">
+        「碇くんが、もうエヴァに乗らなくていいようにする。」<br>
+        <span style="display:inline-block; margin-top:15px; font-size:0.8rem; color:var(--rei-eye-red);">—— 私は多分3人目だから。</span>
+    </div>
+
+    <div class="quote-en">"THE SOUL REMAINS IN THE CODE." - AYANAMI REPOSITORY</div>
+
     <script>
-        // 1. Boot Sequence
-        window.onload = () => {
-            const bootScreen = document.getElementById('boot-screen');
-            const emg = document.getElementById('emergency');
+        // 数字小数点的高精度实时渲染
+        const mainSync = document.getElementById('main-sync-value');
+        let currentSync = 99.0;
+        
+        setInterval(() => {
+            // 平滑、不经意地浮动一下（代表生命的脉搏，不搞太暴躁，这体现出绫波“静”的特性）
+            const delta = (Math.random() - 0.45) * 0.1;
+            currentSync += delta;
             
-            setTimeout(() => { document.getElementById('magi-1').classList.add('approved'); }, 800);
-            setTimeout(() => { document.getElementById('magi-2').classList.add('approved'); }, 1600);
-            setTimeout(() => { document.getElementById('magi-3').classList.add('approved'); }, 2400);
+            if (currentSync > 99.8) currentSync = 99.8;
+            if (currentSync < 90) currentSync = 90;
             
-            // EMERGENCY Flash
-            setTimeout(() => { emg.classList.add('active'); }, 3000);
+            mainSync.innerHTML = currentSync.toFixed(2) + '<span style="font-size:1.2rem; color:var(--rei-cyan); margin-left:3px;">%</span>';
             
-            // Dissolve
-            setTimeout(() => {
-                bootScreen.style.animation = "dissolve 0.3s forwards";
-                renderBars();
-                startTerminal();
-            }, 4500);
-        };
+            // 右侧红色的 "Emotion Pattern" 条形波动
+            const errWave = Math.floor(Math.random() * 20) + 30;
+            document.getElementById('emo-bar').style.width = errWave + '%';
+        }, 1200);
 
-        // 2. Blocky Progress Bars
-        function renderBars() {
-            const syncBar = document.getElementById('sync-bar');
-            const lclBar = document.getElementById('lcl-bar');
-            
-            // 20 blocks total
-            for(let i=0; i<20; i++) {
-                let syncBlock = document.createElement('div');
-                syncBlock.className = 'block';
-                if(i < 8) syncBlock.classList.add('filled', 'danger'); // ~40%
-                syncBar.appendChild(syncBlock);
-
-                let lclBlock = document.createElement('div');
-                lclBlock.className = 'block';
-                if(i < 19) lclBlock.classList.add('filled', 'safe'); // ~95%
-                lclBar.appendChild(lclBlock);
-            }
-        }
-
-        // 3. Tactical Terminal
-        const logs =[
-            "CONNECTING TO CENTRAL DOGMA DB...",
-            "VERIFYING A.T. FIELD INTEGRITY... [OK]",
-            "WARNING: UNIDENTIFIED PULL REQUEST INCOMING.",
-            "EVALUATING CODEBASE...",
-            "<span class='err'>ERR: MERGE CONFLICT IN /DeVibe-Core/.</span>",
-            "SPEAR OF LONGINUS PROTOCOL INITIATED.",
-            "RESOLVING CONFLICTS... [SUCCESS]",
-            "SYSTEM STABILIZED.",
-            "AWAITING DUMMY PLUG INPUT..."
+        // 新剧场版的干净命令行：刷指令不是警告流，而是高度抽象和封装好的CI指令流
+        const terminalLog = [
+            "[OK] Nerv Proxy bypassed. Tunnel verified.",
+            "WILLE / AAA WUNDER synchronization: Disabled.",
+            ">> Accessing Ayanami Series Memories...",
+            "LCL base framework successfully deployed.",
+            "Fetching commit history. Author: [FIRST_CHILD].",
+            "[SYSTEM] Emotion flag caught UnhandledPromiseRejection...",
+            "Rewriting absolute terror algorithms into GitHub pages.",
+            "[INFO] Dummy System on standby. No soul detected here.",
+            "> Everything is right with the repository."
         ];
-
-        function startTerminal() {
-            const output = document.getElementById('log-output');
-            let lineIndex = 0;
-            
-            function printLine() {
-                if(lineIndex >= logs.length) return;
-                const p = document.createElement('p');
-                p.innerHTML = logs[lineIndex];
-                if(logs[lineIndex].includes('ERR')) p.className = 'err';
-                
-                output.appendChild(p);
-                output.scrollTop = output.scrollHeight;
-                
-                lineIndex++;
-                let delay = Math.random() * 600 + 300;
-                if(lineIndex > 0 && logs[lineIndex - 1].includes('ERR')) delay = 1500;
-                
-                setTimeout(printLine, delay);
+        
+        let cliIdx = 0;
+        const cliOutput = document.getElementById('cli-output');
+        
+        function updateCLI() {
+            if (cliOutput.childElementCount > 3) {
+                cliOutput.removeChild(cliOutput.firstElementChild);
             }
-            printLine();
+            const newLine = document.createElement('div');
+            // 将第一行飘红的作为特别标记 (丽的心境微小涟漪)
+            if (terminalLog[cliIdx].includes('Emotion')) newLine.style.color = "var(--rei-eye-red)";
+            else newLine.style.color = "var(--rei-pale-blue)";
+            newLine.style.marginBottom = "4px";
+            newLine.innerText = `> ${terminalLog[cliIdx]}`;
+            
+            cliOutput.appendChild(newLine);
+            cliIdx = (cliIdx + 1) % terminalLog.length;
+            
+            setTimeout(updateCLI, 1800 + Math.random()*2000); // 慢条斯理地跳出日志，有呼吸感
+        }
+        updateCLI();
+
+        // 中间互动按钮: 同步触发特效
+        function triggerImpact() {
+            document.body.style.boxShadow = "inset 0 0 100px var(--rei-eye-red)";
+            mainSync.style.color = "var(--rei-eye-red)";
+            mainSync.style.textShadow = "var(--neon-glow-red)";
+            
+            setTimeout(() => {
+                document.body.style.boxShadow = "none";
+                mainSync.style.color = "var(--rei-plug-suit)";
+                mainSync.style.textShadow = "var(--neon-glow)";
+            }, 600);
         }
     </script>
 </body>
